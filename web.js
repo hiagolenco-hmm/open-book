@@ -111,6 +111,17 @@
   ['touchend', 'touchcancel'].forEach(function (n) { document.addEventListener(n, function () { clearTimeout(tm); t0 = null; }, { passive: true }); });
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+    var had = !!navigator.serviceWorker.controller, pending = false;
+    var typing = function () { var a = document.activeElement; return a && (a.isContentEditable || /^(INPUT|TEXTAREA)$/.test(a.tagName)); };
+    var tryReload = function () { if (pending && !typing()) location.reload(); };
+    navigator.serviceWorker.addEventListener('controllerchange', function () { if (had) { pending = true; tryReload(); } had = true; });
+    document.addEventListener('focusout', function () { setTimeout(tryReload, 1500); });
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function (r) {
+        var chk = function () { try { r.update(); } catch (e) {} };
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) chk(); });
+        setInterval(chk, 30 * 60 * 1000);
+      }).catch(function () {});
+    });
   }
 })();

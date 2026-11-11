@@ -1,4 +1,4 @@
-# Open Book no iPad (versão 2.5.1)
+# Open Book no iPad (versão 2.5.2)
 
 Mesmo layout e mesmos recursos do programa de Windows. Funciona 100% offline depois da primeira abertura. Os dados ficam no próprio iPad (IndexedDB), incluindo imagens e vídeos importados.
 
